@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+
+<h2 class="text-center mb-4">My Account</h2>
+
+<!-- PROFILE -->
+<div class="card p-3 mb-4">
+  <h4>Profile</h4>
+
+  <p><strong>Username:</strong> {{ request.user.username }}</p>
+  <p><strong>Phone:</strong> {{ profile.phone }}</p>
+  <p><strong>Age:</strong> {{ profile.age|default:"-" }}</p>
+  <p><strong>Gender:</strong> {{ profile.gender|default:"-" }}</p>
+
+  <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-dark mt-2">
+    Edit Profile
+  </a>
+</div>
+
+<!-- ADD ADDRESS -->
+<div class="card p-3 mb-4">
+  <h4>Add Address</h4>
+
+  <form method="POST" action="{% url 'add_address' %}">
+    {% csrf_token %}
+
+    <input name="full_name" placeholder="Full Name" class="form-control mb-2" required>
+    <input name="phone" placeholder="Phone" class="form-control mb-2" required>
+    <textarea name="address_line" placeholder="Address" class="form-control mb-2" required></textarea>
+    <input name="city" placeholder="City" class="form-control mb-2" required>
+
+    <button class="btn btn-dark">Add</button>
+  </form>
+</div>
+
+<!-- ADDRESS LIST -->
+<div class="card p-3 mb-4">
+  <h4>Saved Addresses</h4>
+
+  {% for a in addresses %}
+    <div class="border p-2 mb-2">
+
+      <p>{{ a.full_name }} - {{ a.phone }}</p>
+      <p>{{ a.address_line }}, {{ a.city }}</p>
+
+      {% if a.is_default %}
+        <span class="badge bg-success">Default</span>
+      {% endif %}
+
+      <div class="mt-2">
+
+        <a href="{% url 'edit_address' a.id %}" 
+           class="btn btn-sm btn-outline-dark">
+           Edit
+        </a>
+
+        <button 
+            type="button"
+            class="btn btn-danger btn-sm delete-btn"
+            data-id="{{ a.id }}">
+            Delete
+        </button>
+
+        {% if not a.is_default %}
+          <a href="{% url 'set_default_address' a.id %}" 
+             class="btn btn-sm btn-dark">
+             Set Default
+          </a>
+        {% endif %}
+
+      </div>
+    </div>
+
+  {% empty %}
+    <p>No addresses saved</p>
+  {% endfor %}
+</div>
+
+<!-- ORDERS -->
+<div class="card p-3">
+  <h4>My Orders</h4>
+
+  {% for o in orders %}
+    <div class="border p-2 mb-2">
+      <p><strong>Order #{{ o.id }}</strong></p>
+      <p>Status: {{ o.status }}</p>
+      <p>Total: AED {{ o.total }}</p>
+
+      <a href="{% url 'order_detail' o.id %}" 
+         class="btn btn-sm btn-outline-dark">
+         View Details
+      </a>
+    </div>
+
+  {% empty %}
+    <p>No orders yet</p>
+  {% endfor %}
+
+</div>
+
+</div>
+<script>
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function () {
+
+        let addressId = this.dataset.id;
+
+        Swal.fire({
+            title: "Delete Address?",
+            text: "You can undo this action",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it"
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                fetch(`/delete-address/${addressId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/json"
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.success) {
+                        Swal.fire("Error", data.message, "error");
+                        return;
+                    }
+
+                    // ✅ show undo option
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: data.message,
+                        icon: "success",
+                        showCancelButton: true,
+                        confirmButtonText: "Undo",
+                        cancelButtonText: "Close"
+                    }).then((undoResult) => {
+                        if (undoResult.isConfirmed) {
+
+                            fetch(`/restore-address/${addressId}/`, {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRFToken": "{{ csrf_token }}",
+                                    "Content-Type": "application/json"
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(res => {
+                                Swal.fire("Restored!", res.message, "success")
+                                    .then(() => location.reload());
+                            });
+
+                        } else {
+                            location.reload();
+                        }
+                    });
+
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

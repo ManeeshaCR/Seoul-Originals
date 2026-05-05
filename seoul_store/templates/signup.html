@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth">
+  <div class="auth-box">
+
+    <h2>Create Account</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn-main">Sign Up</button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

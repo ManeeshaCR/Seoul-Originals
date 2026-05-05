@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+<h3 class="mb-4">Order Details</h3>
+
+<div class="card p-3 shadow-sm">
+
+  <div class="d-flex justify-content-between">
+    <h5>Order #{{ order.id }}</h5>
+    <span class="badge bg-dark">{{ order.status }}</span>
+  </div>
+
+  <p class="mt-2">Total: AED {{ order.total }}</p>
+
+  <hr>
+
+  {% for item in order.items.all %}
+  <div class="mb-3">
+
+    {% with req=item.latest_request %}
+
+      <!-- PRODUCT DISPLAY -->
+      {% if req and req.request_type == "replace" and req.is_completed %}
+
+        <div class="text-muted text-decoration-line-through">
+          {{ item.product.name }}
+        </div>
+
+        <div class="text-success fw-bold">
+          → {{ req.replacement_product.name }}
+        </div>
+
+      {% else %}
+        <strong>{{ item.product.name }}</strong>
+      {% endif %}
+
+      <!-- QUANTITY / STATUS -->
+      {% if req and req.request_type == "return" and req.is_completed %}
+        <span class="text-danger">
+          <!-- Returned (Qty: {{ item.quantity }}) -->
+          Returned 
+        </span>
+
+      {% elif req and req.request_type == "replace" and req.is_completed %}
+        <span class="text-success">
+          <!-- Replaced (Qty: {{ item.quantity }}) -->
+           Replaced
+        </span>
+
+      {% else %}
+        <p>Qty: {{ item.quantity }}</p>
+      {% endif %}
+
+      <!-- ACTION BUTTON -->
+      {% if order.status == "delivered" %}
+
+        {% if req and req.is_completed %}
+
+            {% if req.request_type == "return" %}
+                <button class="btn btn-success btn-sm" disabled>
+                    Returned & Refunded
+                </button>
+            {% else %}
+                <button class="btn btn-success btn-sm" disabled>
+                    Replaced
+                </button>
+            {% endif %}
+
+        {% elif req and req.status in ["pending_pickup", "picked", "processing"] %}
+
+            <button class="btn btn-warning btn-sm" disabled>
+                In Progress
+            </button>
+
+        {% else %}
+
+            <a href="{% url 'create_return_request' item.id %}" 
+               class="btn btn-sm btn-outline-dark">
+               Return / Replace
+            </a>
+
+        {% endif %}
+
+      {% else %}
+        <small class="text-muted">
+          Return available after delivery
+        </small>
+      {% endif %}
+
+    {% endwith %}
+
+  </div>
+  {% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

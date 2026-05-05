@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth">
+  <div class="auth-box">
+
+    <h4 class="mb-3">Create Individual Account</h4>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <input 
+          type="{{ field.field.widget.input_type }}" 
+          name="{{ field.name }}" 
+          placeholder="{{ field.label }}"
+          value="{{ field.value|default:'' }}"
+          required
+        >
+      {% endfor %}
+
+      <button class="btn-main mt-2">Create Account</button>
+    </form>
+
+    <p class="mt-3">
+      Already have an account? <a href="{% url 'login' %}">Login</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

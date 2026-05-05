@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+  <h4 class="mb-4">{{ category.name }}</h4>
+
+  <div class="row">
+
+  {% for p in products %}
+    <div class="col-6 col-md-3 mb-4">
+
+      <div class="product-card">
+
+        <a href="{% url 'product_detail' p.slug %}" class="text-decoration-none">
+
+          <!-- IMAGE -->
+          <div class="product-img">
+            <img src="{{ p.image.url }}">
+          </div>
+
+          <!-- INFO -->
+          <div class="product-info">
+
+            <div class="product-title">
+              {{ p.name }}
+            </div>
+
+            {% if user.is_authenticated %}
+
+              {% if p.display_price is not None %}
+                <div class="price {% if user.userprofile.account_type == 'wholesale' %}text-success{% endif %}">
+                  AED {{ p.display_price }}
+                </div>
+              {% else %}
+                <div class="pending">Waiting for approval</div>
+              {% endif %}
+
+            {% else %}
+              <a href="{% url 'login' %}" class="login-price">
+                Login to view price
+              </a>
+            {% endif %}
+
+          </div>
+
+        </a>
+
+        <!-- ADD TO CART -->
+        {% if user.is_authenticated %}
+        {% with profile=user.userprofile %}
+
+            {% if profile.account_type == 'wholesale' and not profile.approved %}
+            <!-- ❌ HIDE BUTTON -->
+            {% else %}
+
+            {% if p.stock > 0 %}
+                <form method="POST" action="{% url 'add_to_cart' p.id %}">
+                {% csrf_token %}
+                <button class="btn-cart">
+                    ADD TO CART
+                </button>
+                </form>
+            {% else %}
+                <button class="btn-cart disabled" disabled>
+                Out of stock
+                </button>
+            {% endif %}
+
+            {% endif %}
+
+        {% endwith %}
+        {% endif %}
+
+      </div>
+
+    </div>
+  {% empty %}
+    <p class="text-center">No products available</p>
+  {% endfor %}
+
+  </div>
+
+</div>
+
+{% endblock %}

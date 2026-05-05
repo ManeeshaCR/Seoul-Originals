@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth">
+  <div class="auth-box">
+
+    <h4 class="mb-4">Choose Account Type</h4>
+
+    <a href="{% url 'signup_individual' %}" class="btn-main mb-2 d-block text-center">
+      Individual Account
+    </a>
+
+    <a href="{% url 'signup_wholesale' %}" class="btn btn-outline-dark d-block text-center">
+      Wholesale Account
+    </a>
+
+  </div>
+</div>
+
+{% endblock %}

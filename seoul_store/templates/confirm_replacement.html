@@ -1,0 +1,37 @@
+<div class="auth">
+  <div class="auth-box">
+
+    <h4>Confirm Replacement</h4>
+
+    <!-- ✅ ADD ALERT HERE -->
+    {% if extra_amount %}
+    <div class="alert alert-danger">
+        Extra payment required: AED {{ extra_amount }}
+    </div>
+    {% endif %}
+
+    <p>Are you sure you want to replace this item?</p>
+
+    <p><strong>Product:</strong> {{ return_req.order_item.product.name }}</p>
+    <p><strong>Quantity:</strong> {{ return_req.order_item.quantity }}</p>
+
+    <form method="POST">
+      {% csrf_token %}
+      {% if extra_amount %}
+        <div class="alert alert-danger">
+            Extra payment required: AED {{ extra_amount }}
+        </div>
+        {% endif %}
+
+        <button name="action" value="confirm" class="btn-main"
+                {% if extra_amount %}disabled title="Payment required"{% endif %}>
+            Confirm Replacement
+        </button>
+
+      <button name="action" value="cancel" class="btn-outline-dark" style="margin-top:10px;">
+        Cancel
+      </button>
+    </form>
+
+  </div>
+</div>

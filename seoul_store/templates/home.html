@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+
+  <div class="carousel-inner">
+    {% for b in banners %}
+    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+      <a href="{{ b.link }}">
+        <img src="{{ b.image.url }}" class="d-block w-100 hero-img">
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+
+  <!-- ================= BRAND STRIP ================= -->
+  <div class="brand-strip">
+    <div class="brand-marquee">
+      <div class="brand-container">
+
+        {% for i in "123456"|make_list %}
+        <div class="brand-item"><img src="{% static 'images/brands/innisfree.png' %}"></div>
+        <div class="brand-item"><img src="{% static 'images/brands/sulwhasoo.png' %}"></div>
+        <div class="brand-item"><img src="{% static 'images/brands/etude.png' %}"></div>
+        <div class="brand-item"><img src="{% static 'images/brands/laneige.png' %}"></div>
+        <div class="brand-item"><img src="{% static 'images/brands/cosrx.png' %}"></div>
+        <div class="brand-item"><img src="{% static 'images/brands/missha.png' %}"></div>
+        {% endfor %}
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ================= PRODUCTS ================= -->
+<div class="container mt-5">
+
+  <!-- 🔥 AJAX TABS -->
+  <div class="product-tabs">
+    <a href="#" data-tab="new" class="tab-link active">Just Dropped</a>
+    <a href="#" data-tab="sold" class="tab-link">Most Sold</a>
+    <a href="#" data-tab="deal" class="tab-link">Hot Deal</a>
+  </div>
+
+  <!-- 🔥 PRODUCT GRID (AJAX REPLACED) -->
+  <div id="product-container">
+    {% include "partials/product_grid.html" %}
+  </div>
+
+</div>
+
+{% endblock %}

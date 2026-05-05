@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5" style="max-width:700px;">
+
+  <h3 class="mb-4 text-center">Checkout</h3>
+
+  <form method="POST">
+    {% csrf_token %}
+
+
+<!-- ADDRESS SECTION -->
+<div class="card p-3 mb-4">
+  <h5 class="mb-3">Select Address</h5>
+
+    {% if addresses %}
+    {% for a in addresses %}
+    <div class="border p-2 mb-2">
+
+    <input type="radio" name="address" value="{{ a.id }}"
+            {% if a.is_default %}checked{% endif %} required>
+
+    <strong>{{ a.full_name }}</strong> - {{ a.phone }}<br>
+    {{ a.address_line }}, {{ a.city }}
+
+    </div>
+    {% endfor %}
+    {% else %}
+
+    <p>No address found. Please add address first.</p>
+    <a href="{% url 'account' %}" class="btn btn-dark">Go to Account</a>
+    {% endif %}
+
+</div>
+
+<!-- ORDER SUMMARY -->
+<div class="card p-3 mb-4">
+  <h5 class="mb-3">Order Summary</h5>
+
+  {% for i in items %}
+    <div class="d-flex justify-content-between mb-2">
+      <span>{{ i.product.name }} x {{ i.quantity }}</span>
+      <span>AED {{ i.subtotal }}</span>
+    </div>
+  {% endfor %}
+
+  <hr>
+
+  <div class="d-flex justify-content-between">
+    <strong>Total</strong>
+    <strong>AED {{ total }}</strong>
+  </div>
+</div>
+
+<!-- SUBMIT -->
+<button class="btn btn-dark w-100"
+        onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();">
+  Place Order
+</button>
+
+
+  </form>
+
+</div>
+
+{% endblock %}

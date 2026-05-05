@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+<h3 class="mb-4">My Orders</h3>
+
+{% if orders %}
+
+  {% for order in orders %}
+  <div class="card mb-4 p-3 shadow-sm">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between">
+      <h5>Order #{{ order.id }}</h5>
+      <span class="badge bg-dark">{{ order.status }}</span>
+    </div>
+
+    <p class="mt-2">Total: AED {{ order.total }}</p>
+
+    {% if order.status == "pending" or order.status == "processing" %}
+      <a href="{% url 'cancel_order' order.id %}" 
+         class="btn btn-sm btn-outline-danger mb-2">
+         Cancel Order
+      </a>
+    {% endif %}
+
+    <hr>
+
+    <!-- ITEMS -->
+    {% for item in order.items.all %}
+    {% with req=item.latest_request %}
+    <div class="mb-3">
+
+      <!-- PRODUCT DISPLAY -->
+      {% if req and req.request_type == "replace" and req.is_completed %}
+        <div class="text-muted text-decoration-line-through">
+          {{ item.product.name }} (Qty: {{ item.quantity }})
+        </div>
+        <div class="text-success fw-bold">
+          → {{ req.replacement_product.name }} (Qty: {{ item.quantity }})
+        </div>
+
+      {% elif req and req.request_type == "return" and req.is_completed %}
+        <span class="text-danger">
+           Return Completed
+        </span>
+
+      {% else %}
+        <strong>{{ item.product.name }}</strong>
+        <p>Qty: {{ item.quantity }}</p>
+      {% endif %}
+
+      <!-- ACTION BUTTONS -->
+      {% if order.status == "delivered" %}
+
+        {% if req %}
+
+          {% if req.request_type == "replace" %}
+
+            {% if req.is_completed %}
+              <button class="btn btn-success btn-sm" disabled>
+                Replacement Completed
+              </button>
+
+            {% elif req.replacement_product %}
+              <a href="{% url 'confirm_replacement' req.id %}" 
+                class="btn btn-warning btn-sm">
+                Continue Replacement
+              </a>
+
+            {% else %}
+              <a href="{% url 'home' %}" 
+                class="btn btn-outline-dark btn-sm">
+                Choose Replacement
+              </a>
+            {% endif %}
+
+          {% elif req.request_type == "return" %}
+
+            {% if req.is_completed %}
+              <button class="btn btn-success btn-sm" disabled>
+                Return Completed
+              </button>
+            {% else %}
+              <button class="btn btn-warning btn-sm" disabled>
+                Return In Progress
+              </button>
+            {% endif %}
+
+          {% endif %}
+
+        {% else %}
+          <a href="{% url 'create_return_request' item.id %}" 
+            class="btn btn-sm btn-outline-dark">
+            Return / Replace
+          </a>
+        {% endif %}
+
+      {% else %}
+        <small class="text-muted">
+          Return available after delivery
+        </small>
+      {% endif %}
+
+    </div>
+    {% endwith %}
+    {% endfor %}
+
+    <!-- REPLACEMENTS -->
+    {% if order.replacements.all %}
+    <div class="mt-3 p-3 border rounded bg-light">
+
+      <strong>Replacement Orders</strong>
+
+      {% for r in order.replacements.all %}
+      <div class="mt-2">
+
+        <p>
+          Status:
+          <span class="badge bg-info">{{ r.status }}</span>
+        </p>
+
+        {% for item in r.items.all %}
+          <p>{{ item.product.name }} (Qty: {{ item.quantity }})</p>
+        {% endfor %}
+
+      </div>
+      {% endfor %}
+
+    </div>
+    {% endif %}
+
+  </div>
+  {% endfor %}
+
+{% else %}
+  <p>No orders yet</p>
+{% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid product-page">
+
+  <div class="row">
+
+    <!-- LEFT: IMAGE / SLIDER -->
+    <div class="col-md-6">
+
+      <div class="product-gallery">
+
+        <div class="slider" id="slider">
+
+          <button class="nav prev" onclick="slide(-1)">‹</button>
+
+          <img id="mainImage"
+               src="{{ product.image.url }}"
+               onclick="openModal(this.src)">
+
+          <button class="nav next" onclick="slide(1)">›</button>
+
+        </div>
+
+        <div class="thumbs">
+          <img src="{{ product.image.url }}" onclick="setImage(this.src)">
+          {% for img in product.images.all %}
+            <img src="{{ img.image.url }}" onclick="setImage(this.src)">
+          {% endfor %}
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-md-6 product-info-box">
+
+      <h2 class="product-title-main">{{ product.name }}</h2>
+
+      <!-- VARIANTS -->
+      <!-- <div class="variants">
+        <p>Select Option:</p>
+        <div class="variant-options">
+          <button onclick="selectVariant(this)">Small</button>
+          <button onclick="selectVariant(this)">Medium</button>
+          <button onclick="selectVariant(this)">Large</button>
+        </div>
+      </div>
+       -->
+      {% if user.is_authenticated %}
+        {% with profile=user.userprofile %}
+
+          {% if profile.account_type == 'wholesale' and not profile.approved %}
+            <p class="pending">Waiting for approval</p>
+          {% else %}
+
+            {% if product.display_price %}
+              <div class="price-main">
+                AED {{ product.display_price }}
+              </div>
+            {% endif %}
+              
+            {% if product.stock > 0 %}
+              <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+
+                <!-- QUANTITY SELECTOR -->
+                <div class="qty-box">
+                  <button type="button" onclick="changeQty(-1)">−</button>
+                  <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                  <button type="button" onclick="changeQty(1)">+</button>
+                </div>
+
+                <button class="btn-buy">ADD TO CART</button>
+              </form>
+              {% else %}
+              <button class="btn-buy disabled">SOLD OUT</button>
+              {% endif %}
+
+          {% endif %}
+
+        {% endwith %}
+      {% else %}
+        <a href="{% url 'login' %}" class="login-price">
+          Login to view price
+        </a>
+      {% endif %}
+
+      <!-- DESCRIPTION -->
+      <div class="product-desc">
+        <h5>Product Information</h5>
+        <p>{{ product.description|linebreaks }}</p>
+      </div>
+
+      <!-- ACCORDION (FIXED) -->
+      <div class="product-sections">
+
+        <div class="section-item">
+          <div class="section-header" onclick="toggleSection(this)">
+            <span>HOW TO USE</span>
+            <span class="plus">+</span>
+          </div>
+          <div class="section-content">
+            {{ product.how_to_use|linebreaks }}
+          </div>
+        </div>
+
+        <div class="section-item">
+          <div class="section-header" onclick="toggleSection(this)">
+            <span>INGREDIENTS</span>
+            <span class="plus">+</span>
+          </div>
+          <div class="section-content">
+            {{ product.ingredients|linebreaks }}
+          </div>
+        </div>
+
+        <div class="section-item">
+          <div class="section-header" onclick="toggleSection(this)">
+            <span>100% AUTHENTICITY GUARANTEE</span>
+            <span class="plus">+</span>
+          </div>
+          <div class="section-content">
+            {{ product.authenticity|linebreaks }}
+          </div>
+        </div>
+
+        <div class="section-item">
+          <div class="section-header" onclick="toggleSection(this)">
+            <span>SHIPPING INFO</span>
+            <span class="plus">+</span>
+          </div>
+          <div class="section-content">
+            {{ product.shipping_info|linebreaks }}
+          </div>
+        </div>
+
+        <div class="section-item active">
+          <div class="section-header" onclick="toggleSection(this)">
+            <span>RETURN POLICY</span>
+            <span class="plus">−</span>
+          </div>
+          <div class="section-content">
+            {{ product.return_policy|linebreaks }}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RELATED -->
+  <div class="related-section">
+    <h4>You may also like</h4>
+    <div class="product-grid">
+      {% include "partials/product_grid.html" with products=related_products %}
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <img id="modalImg">
+</div>
+
+<script>
+
+/* ================= IMAGE DATA ================= */
+let images = [
+  "{{ product.image.url }}",
+  {% for img in product.images.all %}
+    "{{ img.image.url }}",
+  {% endfor %}
+];
+
+let current = 0;
+
+/* ================= SLIDER ================= */
+function slide(dir){
+  current = (current + dir + images.length) % images.length;
+  document.getElementById("mainImage").src = images[current];
+}
+
+function setImage(src){
+  document.getElementById("mainImage").src = src;
+  current = images.indexOf(src);
+}
+
+/* ================= SWIPE ================= */
+let startX = 0;
+const slider = document.getElementById('slider');
+
+if (slider) {
+  slider.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  slider.addEventListener('touchend', e => {
+    let endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) slide(1);
+    if (endX - startX > 50) slide(-1);
+  });
+}
+
+/* ================= MODAL ================= */
+function openModal(src){
+  document.getElementById("imageModal").style.display = "flex";
+  document.getElementById("modalImg").src = src;
+}
+
+function closeModal(){
+  document.getElementById("imageModal").style.display = "none";
+}
+
+/* ================= VARIANTS ================= */
+function selectVariant(el){
+  document.querySelectorAll('.variant-options button')
+    .forEach(btn => btn.classList.remove('active'));
+
+  el.classList.add('active');
+}
+
+/* ================= ACCORDION ================= */
+function toggleSection(el) {
+  const item = el.parentElement;
+
+  document.querySelectorAll('.section-item').forEach(i => {
+    if (i !== item) {
+      i.classList.remove('active');
+      i.querySelector('.plus').textContent = '+';
+    }
+  });
+
+  item.classList.toggle('active');
+  el.querySelector('.plus').textContent =
+    item.classList.contains('active') ? '−' : '+';
+}
+
+/* ================= QUANTITY ================= */
+function changeQty(val){
+  let input = document.getElementById("qtyInput");
+  let current = parseInt(input.value) || 1;
+
+  let max = parseInt(input.max);
+  let min = 1;
+
+  let newVal = current + val;
+
+  if(newVal >= min && newVal <= max){
+    input.value = newVal;
+  }
+}
+</script>
+
+{% endblock %}
