@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F
-from .models import Address, Category, Product, Cart, CartItem, Banner, Order, OrderItem,UserProfile
+from .models import Address, Category, Product, Cart, CartItem, Banner,Bannersection2,Bannersection3, Order, OrderItem,UserProfile,Routine,HomePromo
 from django.views.decorators.http import require_POST
 from decimal import Decimal
 from django.contrib.auth.models import User
@@ -43,20 +43,77 @@ def product_detail(request, slug):
         'related_products': related_products
     })
 
-def home(request):
-    banners = Banner.objects.filter(active=True).order_by('order')
-    products = Product.objects.select_related('category').all()
-
-    query = request.GET.get('q')
-    if query:
-        products = products.filter(name__icontains=query)
+def tag_products(request, tag):
+    products = Product.objects.filter(tag__iexact=tag)
 
     for p in products:
         p.display_price = p.get_price_for_user(request.user)
 
+    return render(request, "category.html", {
+        "products": products,
+        "category": {"name": tag.capitalize()}
+    })
+
+def home(request):
+    banners = Banner.objects.filter(active=True).order_by('order')
+    bannerssection2 = Bannersection2.objects.filter(active=True).order_by('order')
+    bannerssection3 = Bannersection3.objects.filter(active=True).order_by('order')
+
+    products = Product.objects.select_related('category').all()
+
+    # 🔍 SEARCH
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(name__icontains=query)
+
+    # 💰 PRICE FILTER
+    min_price = request.GET.get('min')
+    max_price = request.GET.get('max')
+
+    if min_price:
+        products = products.filter(retail_price__gte=min_price)
+
+    if max_price:
+        products = products.filter(retail_price__lte=max_price)
+
+    # 👇 apply pricing
+    for p in products:
+        p.display_price = p.get_price_for_user(request.user)
+
+    routine_items = Routine.objects.filter(active=True).order_by('order')
+    promos = HomePromo.objects.filter(active=True).order_by('order')[:2]
+
     return render(request, 'home.html', {
         'banners': banners,
-        'products': products
+        'bannerssection2': bannerssection2,
+        'bannerssection3': bannerssection3,
+        'products': products,
+        'routine_items': routine_items,
+        'promos':promos
+    })
+
+def price_filter(request):
+    min_price = request.GET.get('min')
+    max_price = request.GET.get('max')
+
+    products = Product.objects.all()
+
+    if min_price and max_price:
+        products = products.filter(
+            retail_price__gte=min_price,
+            retail_price__lte=max_price
+        )
+    elif min_price:  # for 1000+
+        products = products.filter(retail_price__gte=min_price)
+
+    # ✅ apply pricing logic (IMPORTANT)
+    for p in products:
+        p.display_price = p.get_price_for_user(request.user)
+
+    return render(request, 'price_filter.html', {
+        'products': products,
+        'min': min_price,
+        'max': max_price
     })
 
 def ajax_products(request):
@@ -94,8 +151,8 @@ def ajax_products(request):
     )
     return JsonResponse({"html": html})
 
-def category_view(request, id):
-    category = get_object_or_404(Category, id=id)
+def category_view(request, slug):
+    category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(category=category)
 
     # ✅ ADD THIS
@@ -104,6 +161,18 @@ def category_view(request, id):
 
     return render(request, 'category.html', {
         'category': category,
+        'products': products,
+    })
+
+def all_categories_products(request):
+
+    products = Product.objects.select_related('category').all()
+
+    for p in products:
+        p.display_price = p.get_price_for_user(request.user)
+
+    return render(request, 'category.html', {
+        'category': {'name': 'All Products'},
         'products': products,
     })
 

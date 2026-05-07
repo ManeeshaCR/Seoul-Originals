@@ -61,5 +61,190 @@
   </div>
 
 </div>
+<!-- ================= BANNER SECTION-2 ================= -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
 
+  <div class="carousel-inner">
+    {% for b in bannerssection2 %}
+    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+      <a href="{{ b.link }}">
+        <img src="{{ b.image.url }}" class="d-block w-100 hero-img">
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+
+<!-- ================= SHOP BY PRICE ================= -->
+<div class="container mt-5">
+  <!-- <h5 class="text-center mb-4" style="font-weight: 900;">Shop With Price</h5> -->
+  <h5 class="mb-4" style="font-weight: 900;">Shop With Price</h5>
+
+  <div class="price-boxes">
+
+  <a href="{% url 'price_filter' %}?min=10&max=99" class="price-box price-1">
+    <div class="big">10 AED</div>
+    <div class="small">TO</div>
+    <div class="big">99 AED</div>
+  </a>
+
+  <a href="{% url 'price_filter' %}?min=100&max=199" class="price-box price-2">
+    <div class="big">100 AED</div>
+    <div class="small">TO</div>
+    <div class="big">199 AED</div>
+  </a>
+
+  <a href="{% url 'price_filter' %}?min=200&max=499" class="price-box price-3">
+    <div class="big">200 AED</div>
+    <div class="small">TO</div>
+    <div class="big">499 AED</div>
+  </a>
+
+  <a href="{% url 'price_filter' %}?min=500&max=999" class="price-box price-4">
+    <div class="big">500 AED</div>
+    <div class="small">TO</div>
+    <div class="big">999 AED</div>
+  </a>
+
+  <a href="{% url 'price_filter' %}?min=1000" class="price-box price-5">
+    <div class="big">1000 AED</div>
+    <div class="small">ABOVE</div>
+  </a>
+</div>
+
+</div>
+
+<!-- ================= K BEAUTY ROUTINE ================= -->
+<div class="container mt-5">
+
+  <h5 class=" mb-4 fw-bold">Find your K-Beauty Routine</h5>
+
+  <div class="routine-grid">
+
+    {% for item in routine_items %}
+      <a href="{% url 'tag_products' item.tag %}" class="routine-card">
+
+        <div class="routine-img">
+          <img src="{{ item.image.url }}" alt="{{ item.name }}">
+        </div>
+
+        <div class="routine-label">
+          {{ item.name }} →
+        </div>
+
+      </a>
+    {% endfor %}
+
+  </div>
+
+</div>
+
+<!-- ================= PROMOTIONAL CARDS ================= -->
+<div class="promo-wrapper">
+
+  {% for promo in promos %}
+  <a href="{% url 'tag_products' promo.tag %}" class="promo-card">
+
+    <div class="promo-img">
+      <img src="{{ promo.image.url }}" alt="{{ promo.title }}">
+    </div>
+
+    <div class="promo-content">
+      <h3>{{ promo.title }}</h3>
+      <span class="shop-now">SHOP NOW →</span>
+    </div>
+
+  </a>
+  {% endfor %}
+
+</div>
+
+<!-- ================= BANNER SECTION-3 ================= -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+
+  <div class="carousel-inner">
+    {% for b in bannerssection3 %}
+    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+      <a href="{{ b.link }}">
+        <img src="{{ b.image.url }}" class="d-block w-100 hero-img">
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+<!-- ================= PRODUCTS ================= -->
+<!-- ================= ACCESSORIES ================= -->
+<div class="container mt-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold">Accessories</h4>
+
+    <a href="/category/accessories/" class="btn btn-outline-dark btn-sm">
+      View All
+    </a>
+  </div>
+
+  <div class="row">
+    {% for product in accessories_products %}
+
+    <div class="col-6 col-md-3 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+
+        <a href="{% url 'product_detail' product.slug %}">
+          <img src="{{ product.image.url }}"
+               class="card-img-top"
+               style="height:260px; object-fit:cover;">
+        </a>
+
+        <div class="card-body">
+
+          <h6 class="card-title">
+            {{ product.name|truncatechars:40 }}
+          </h6>
+
+          <div class="fw-bold mb-2">
+            AED {{ product.display_price }}
+          </div>
+
+          <form method="POST"
+                action="{% url 'add_to_cart' product.id %}">
+            {% csrf_token %}
+
+            <button class="btn btn-dark w-100">
+              Add to Cart
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    {% empty %}
+
+    <div class="col-12">
+      <p>No accessories found.</p>
+    </div>
+
+    {% endfor %}
+  </div>
+
+</div>
 {% endblock %}
+

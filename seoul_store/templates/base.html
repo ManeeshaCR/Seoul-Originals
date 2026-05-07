@@ -8,9 +8,20 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <!-- ✅ FAVICON -->
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <meta name="csrf-token" content="{{ csrf_token }}">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
   <style>
+    
+    .main-content{
+      flex:1;
+    }
     /* Side panel styles for mobile menu */
     .side-menu {
       height: 100%;
@@ -109,6 +120,294 @@
     @media (max-width: 991px) {
       .nav-bar {
         display: none;
+      }
+    }
+    /* ===== FOOTER ===== */
+    .site-footer{
+      background-color:#f3a6a0 !important;
+      border-top:1px solid #f3a6a0;
+      margin-top:80px;
+      overflow:hidden;
+      width:100%;
+    }
+    
+    /* =========================================
+      CONTAINER
+    ========================================= */
+
+    .footer-container{
+      max-width:1400px;
+      margin:auto;
+      padding:70px 30px;
+
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:50px;
+    }
+
+    /* =========================================
+      BRAND
+    ========================================= */
+
+    .footer-brand-logo{
+      height:75px;
+      width:auto;
+      max-width:100%;
+      margin-bottom:18px;
+    }
+
+    .footer-text{
+      color:#000000 !important;
+      font-size:14px;
+      line-height:1.8;
+      margin-bottom:25px;
+      max-width:320px;
+    }
+
+    /* =========================================
+      HEADINGS
+    ========================================= */
+
+    .footer-col h4{
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:22px;
+      color:#0b0b0b !important;
+    }
+
+    /* =========================================
+      LINKS
+    ========================================= */
+
+    .footer-col a{
+      display:block;
+      text-decoration:none;
+      color:#000 !important;
+      margin-bottom:14px;
+      font-size:14px;
+      transition:0.25s ease;
+      width:fit-content;
+      word-break:break-word;
+    }
+
+    .footer-col a:hover{
+      color:#3e3d3c;
+      transform:translateX(4px);
+    }
+
+    /* =========================================
+      SOCIALS
+    ========================================= */
+
+    .footer-socials{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+    }
+
+    .footer-socials a{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:white;
+      border:1px solid #eee;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      color:#444;
+      font-size:16px;
+
+      transition:0.3s ease;
+
+      flex-shrink:0;
+    }
+
+    .footer-socials a:hover{
+      background:#000;
+      border-color:#000;
+      color:white;
+      transform:translateY(-4px);
+    }
+
+    /* =========================================
+      NEWSLETTER
+    ========================================= */
+
+    .footer-newsletter{
+      display:flex;
+      width:100%;
+      margin-top:18px;
+    }
+
+    .footer-newsletter input{
+      flex:1;
+      min-width:0;
+
+      height:50px;
+      border:1px solid #e6dede;
+      padding:0 16px;
+      font-size:14px;
+      outline:none;
+      background:white;
+
+      border-radius:14px 0 0 14px;
+    }
+
+    .footer-newsletter input:focus{
+      border-color:#000;
+    }
+
+    .footer-newsletter button{
+      height:50px;
+      border:none;
+      background:#000;
+      color:white;
+
+      padding:0 20px;
+      font-size:14px;
+      font-weight:600;
+
+      border-radius:0 14px 14px 0;
+
+      transition:0.3s ease;
+
+      white-space:nowrap;
+    }
+
+    .footer-newsletter button:hover{
+      background:#343232;
+    }
+
+    /* =========================================
+      BOTTOM
+    ========================================= */
+
+    .footer-bottom{
+      border-top:1px solid #ece3e3;
+      padding:22px 20px;
+
+      text-align:center;
+
+      font-size:13px;
+      color:#000;
+
+      background:#f3a6a0;
+    }
+
+    /* =========================================
+      LARGE TABLETS
+    ========================================= */
+
+    @media (max-width: 1100px){
+
+      .footer-container{
+        grid-template-columns:repeat(4, 1fr);
+        gap:45px;
+      }
+
+      .footer-text{
+        max-width:100%;
+      }
+    }
+
+    /* =========================================
+      TABLETS
+    ========================================= */
+
+    @media (max-width: 768px){
+
+      .footer-container{
+        grid-template-columns:repeat(2, 1fr);
+        padding:50px 22px;
+        gap:35px;
+      }
+
+      .footer-col{
+        width:100%;
+      }
+
+      .footer-text{
+        max-width:100%;
+      }
+
+      .footer-col h4{
+        margin-bottom:18px;
+      }
+
+      .footer-newsletter{
+        flex-direction:column;
+        gap:12px;
+      }
+
+      .footer-newsletter input{
+        flex:1;
+        min-width:0;
+
+        height:60px; 
+        border:1px solid #e6dede;
+        padding:0 16px;
+        font-size:14px;
+        outline:none;
+        background:white;
+
+        border-radius:14px 0 0 14px;
+      }
+
+      .footer-newsletter button{
+        width:100%;
+        border-radius:12px;
+      }
+
+      .footer-socials{
+        justify-content:flex-start;
+      }
+    }
+
+    /* =========================================
+      MOBILE
+    ========================================= */
+
+    @media (max-width: 480px){
+
+      .footer-container{
+        grid-template-columns:repeat(2, 1fr);
+        padding:40px 18px;
+        gap:30px;
+      }
+
+      .footer-brand-logo{
+        height:60px;
+      }
+
+      .footer-col h4{
+        font-size:17px;
+      }
+
+      .footer-col a{
+        font-size:13px;
+      }
+
+      .footer-text{
+        font-size:13px;
+        line-height:1.7;
+      }
+
+      .footer-bottom{
+        font-size:12px;
+        padding:18px 14px;
+      }
+
+      .footer-newsletter input{
+        width:100%;
+        height:50px;
+        border-radius:12px;
+      }
+      .footer-socials a{
+        width:38px;
+        height:38px;
+        font-size:15px;
       }
     }
   </style>
@@ -214,7 +513,7 @@
 </div> -->
 <div class="nav-bar d-none d-lg-flex">
   {% for c in categories %}
-    <a href="{% url 'category' c.id %}">{{ c.name }}</a>
+    <a href="{% url 'category' c.slug %}">{{ c.name }}</a>
   {% endfor %}
 </div>
 <!-- MOBILE NAVIGATION (Hamburger Menu) -->
@@ -231,7 +530,7 @@
 <div id="sideMenu" class="side-menu">
   <button class="close-btn" onclick="closeMenu()">&times;</button>
   {% for c in categories %}
-    <a href="{% url 'category' c.id %}">{{ c.name }}</a>
+    <a href="{% url 'category' c.slug %}">{{ c.name }}</a>
   {% endfor %}
   <div class="account-pill">
   <span class="icon">👤</span>
@@ -257,7 +556,93 @@
 <!-- Overlay (for background dimming when menu opens) -->
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-{% block content %}{% endblock %}
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+
+  <div class="footer-container">
+
+    <!-- BRAND -->
+    <div class="footer-col">
+      
+      <img 
+        src="{% static 'images/logo.png' %}" 
+        alt="Logo"
+        class="footer-brand-logo"
+      >
+
+      <p class="footer-text">
+        Premium Korean beauty products curated for glowing skin,
+        self-care, and confidence.
+      </p>
+
+      <div class="footer-socials">
+        <a href="#"><i class="bi bi-instagram"></i></a>
+        <a href="#"><i class="bi bi-facebook"></i></a>
+        <a href="#"><i class="bi bi-tiktok"></i></a>
+      </div>
+
+    </div>
+
+    <!-- SHOP -->
+    <div class="footer-col">
+
+      <h4>Shop</h4>
+
+      {% for c in categories %}
+        <a href="{% url 'category' c.slug %}">
+          {{ c.name }}
+        </a>
+      {% endfor %}
+
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="footer-col">
+
+      <h4>Support</h4>
+
+      <a href="#">Contact Us</a>
+      <a href="#">Shipping Policy</a>
+      <a href="#">Returns & Refunds</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">FAQs</a>
+
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="footer-col">
+
+      <h4>Join Our Newsletter</h4>
+
+      <p class="footer-text">
+        Get exclusive offers, skincare tips & early launches.
+      </p>
+
+      <form class="footer-newsletter">
+        <input
+          type="email"
+          placeholder="Your email address"
+          required
+        >
+
+        <button type="submit">
+          Subscribe
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="footer-bottom">
+    © 2026 Seoul Originals. All Rights Reserved.
+  </div>
+
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -332,6 +717,39 @@ function addToCart(productId) {
     }
   });
 }
+</script>
+
+<script>
+  let promoSwiper;
+
+  function initPromoSwiper() {
+    if (window.innerWidth <= 768 && !promoSwiper) {
+      promoSwiper = new Swiper('.promo-swiper', {
+        loop: true,
+
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+
+        spaceBetween: 15,
+        slidesPerView: 1.1,
+      });
+    }
+
+    if (window.innerWidth > 768 && promoSwiper) {
+      promoSwiper.destroy(true, true);
+      promoSwiper = undefined;
+    }
+  }
+
+  window.addEventListener('load', initPromoSwiper);
+  window.addEventListener('resize', initPromoSwiper);
 </script>
 </body>
 </html>

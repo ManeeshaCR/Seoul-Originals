@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.db.models import F
 from django.db.models.signals import pre_save
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # ---------------- CATEGORY ----------------
 class Category(models.Model):
@@ -31,7 +32,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True, null=True)
     description = models.TextField(blank=True)
-
+    tag = models.CharField(max_length=100, blank=True)
     # ✅ NEW FIELDS
     how_to_use = models.TextField(blank=True)
     ingredients = models.TextField(blank=True)
@@ -62,6 +63,31 @@ class Product(models.Model):
             return None  # still allowed, but must be handled everywhere
 
         return self.retail_price
+    
+class Routine(models.Model):
+    name = models.CharField(max_length=100)   # Cleanser, Toner, etc.
+    tag = models.CharField(max_length=100)    # used for filtering page
+    image = models.ImageField(upload_to='routine/')
+    order = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['order']
+
+
+class HomePromo(models.Model):
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='promo/')
+    tag = models.CharField(max_length=100)
+
+    order = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
 
 # ---------------- PRODUCT IMAGE GALLERY ----------------
 class ProductImage(models.Model):
@@ -91,7 +117,7 @@ class CartItem(models.Model):
     def subtotal(self):
         price = self.product.get_price_for_user(self.cart.user)
         if price is None:
-            return 0
+            raise ValueError("User not allowed to purchase")
         return price * self.quantity
 
     def __str__(self):
@@ -222,7 +248,28 @@ class Banner(models.Model):
     def __str__(self):
         return self.title or "Banner"
 
+# ---------------- BANNER 2 ----------------
+class Bannersection2(models.Model):
+    title = models.CharField(max_length=200, blank=True)
+    image = models.ImageField(upload_to='bannerssection2/')
+    link = models.CharField(max_length=255, blank=True, default="/")
+    active = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.title or "Bannersection2"
+    
+# ---------------- BANNER 3 ----------------
+class Bannersection3(models.Model):
+    title = models.CharField(max_length=200, blank=True)
+    image = models.ImageField(upload_to='bannerssection3/')
+    link = models.CharField(max_length=255, blank=True, default="/")
+    active = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.title or "Bannersection3"
+    
 # ---------------- ADDRESS ----------------
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -287,10 +334,6 @@ def handle_return_stock(sender, instance, **kwargs):
         )
 
         print("✅ STOCK UPDATED")
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

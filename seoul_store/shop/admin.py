@@ -3,9 +3,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .models import (
-    Product, Category, Cart, CartItem, Banner,
+    Product, Category, Cart, CartItem, Banner,Bannersection2,Bannersection3,
     Order, OrderItem, ReturnRequest, UserProfile,
-    Address, ProductImage   # ✅ ADD THIS
+    Address, ProductImage,Routine,HomePromo
+
 )
 
 # ---------------- CATEGORY ----------------
@@ -16,15 +17,26 @@ class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 3
 
+@admin.register(Routine)
+class RoutineAdmin(admin.ModelAdmin):
+    list_display = ('name', 'tag', 'order', 'active')
+    list_editable = ('order', 'active')
+    search_fields = ('name', 'tag')
+
+@admin.register(HomePromo)
+class HomePromoAdmin(admin.ModelAdmin):
+    list_display = ['title', 'tag', 'order', 'active']
+    list_editable = ['order', 'active']
+
 # ---------------- PRODUCT ----------------
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'retail_price', 'wholesale_price', 'stock', 'category')
+    list_display = ('name', 'retail_price', 'wholesale_price', 'stock', 'category','tag')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline]
 
     fieldsets = (
         ("Basic Info", {
-            "fields": ("name", "slug", "category", "image", "description")
+            "fields": ("name", "slug", "category", "image", 'tag',"description")
         }),
         ("Pricing & Stock", {
             "fields": ("retail_price", "wholesale_price", "stock", "is_hot_deal")
@@ -48,6 +60,8 @@ admin.site.register(CartItem)
 
 # ---------------- BANNER ----------------
 admin.site.register(Banner)
+admin.site.register(Bannersection2)
+admin.site.register(Bannersection3)
 
 # ---------------- ORDER ----------------
 admin.site.register(Order)

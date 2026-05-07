@@ -52,15 +52,15 @@
         {% with profile=user.userprofile %}
 
           {% if profile.account_type == 'wholesale' and not profile.approved %}
-            <p class="pending">Waiting for approval</p>
+            <p class="pending">Your wholesale account is under review.</p>
           {% else %}
 
             {% if product.display_price %}
-              <div class="price-main">
                 AED {{ product.display_price }}
-              </div>
+            {% else %}
+                <span class="text-danger">Not available</span>
             {% endif %}
-              
+                          
             {% if product.stock > 0 %}
               <form method="POST" action="{% url 'add_to_cart' product.id %}">
                 {% csrf_token %}

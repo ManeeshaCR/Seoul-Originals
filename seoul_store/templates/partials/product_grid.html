@@ -1,18 +1,16 @@
-<div class="product-grid">
+<div class="product-grid responsive-grid">
 
 {% for p in products %}
   <div class="product-col">
 
     <div class="product-card">
 
-      <!-- IMAGE -->
       <a href="{% url 'product_detail' p.slug %}">
         <div class="product-img">
           <img src="{{ p.image.url }}" alt="{{ p.name }}">
         </div>
       </a>
 
-      <!-- INFO -->
       <div class="product-info">
 
         <a href="{% url 'product_detail' p.slug %}" class="product-title">
@@ -21,46 +19,34 @@
 
         {% if user.is_authenticated %}
           {% with profile=user.userprofile %}
-
             {% if profile.account_type == 'wholesale' and not profile.approved %}
-              <span class="pending">Waiting for approval</span>
-
+              <span class="pending">Pending approval</span>
             {% else %}
 
-              {% if p.display_price is not None %}
-                <div class="price {% if profile.account_type == 'wholesale' %}text-success{% endif %}">
-                  AED {{ p.display_price }}
-                </div>
+              {% if p.display_price %}
+                <div class="price">AED {{ p.display_price }}</div>
               {% endif %}
 
               {% if p.stock > 0 %}
                 <form method="POST" action="{% url 'add_to_cart' p.id %}">
                   {% csrf_token %}
-                  <button type="submit" class="btn-cart">
-                    Add to Cart
-                  </button>
+                  <button type="submit" class="btn-cart">Add to Cart</button>
                 </form>
               {% else %}
-                <button class="btn-cart disabled" disabled>
-                  Out of stock
-                </button>
+                <button class="btn-cart disabled">Out of stock</button>
               {% endif %}
 
             {% endif %}
           {% endwith %}
-
         {% else %}
-          <a href="{% url 'login' %}" class="login-price">
-            Login to view price
-          </a>
+          <a href="{% url 'login' %}" class="login-price">Login to view price</a>
         {% endif %}
 
       </div>
+
     </div>
 
   </div>
-{% empty %}
-  <p class="text-center">No products available</p>
 {% endfor %}
 
 </div>
