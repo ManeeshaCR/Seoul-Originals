@@ -2,11 +2,271 @@
 
 {% block content %}
 
+
+<style>
+
+/* =========================================
+   K-BEAUTY FILTER
+========================================= */
+
+.kfilter-wrap{
+  margin-bottom:40px;
+}
+
+.kfilter-scroll{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+/* PILLS */
+.kfilter-scroll a.kfilter-pill{
+
+  position:relative;
+
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+
+  padding:12px 24px;
+
+  border-radius:999px;
+
+  text-decoration:none !important;
+
+  background:linear-gradient(
+    135deg,
+    #fff7fb,
+    #fff0f6
+  ) !important;
+
+  border:1px solid #ffd6e7 !important;
+
+  color:#d63384 !important;
+
+  font-size:13px;
+  font-weight:600;
+
+  letter-spacing:0.3px;
+
+  white-space:nowrap;
+
+  transition:all .3s ease;
+
+  box-shadow:
+  0 6px 18px rgba(255,105,180,0.08);
+}
+
+/* HOVER */
+.kfilter-scroll a.kfilter-pill:hover{
+
+  background:linear-gradient(
+    135deg,
+    #ff7eb3,
+    #ff4f9a
+  ) !important;
+
+  color:#fff !important;
+
+  border-color:#ff4f9a !important;
+
+  transform:translateY(-3px);
+
+  box-shadow:
+  0 10px 24px rgba(255,105,180,0.22);
+}
+
+/* ACTIVE */
+.kfilter-scroll a.kfilter-pill.active{
+
+  background:linear-gradient(
+    135deg,
+    #ff7eb3,
+    #ff4f9a
+  ) !important;
+
+  color:#fff !important;
+
+  border-color:#ff4f9a !important;
+
+  box-shadow:
+  0 12px 26px rgba(255,105,180,0.25);
+}
+
+/* SMALL GLOW DOT */
+.kfilter-scroll a.kfilter-pill.active::after{
+
+  content:"";
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:#fff;
+
+  position:absolute;
+
+  top:8px;
+  right:10px;
+}
+
+/* MOBILE */
+@media (max-width:768px){
+
+  .kfilter-scroll{
+    justify-content:flex-start;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+
+  .kfilter-scroll::-webkit-scrollbar{
+    display:none;
+  }
+
+  .kfilter-scroll a.kfilter-pill{
+    flex:0 0 auto;
+    padding:10px 18px;
+    font-size:12px;
+  }
+}
+
+
+/* =========================================
+   K-BEAUTY PAGINATION
+========================================= */
+
+.pagination{
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.pagination .page-item{
+  list-style:none;
+}
+
+.pagination .page-link{
+
+  min-width:42px;
+  height:42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:14px !important;
+
+  border:1px solid #ffd6e7 !important;
+
+  background:linear-gradient(
+    135deg,
+    #fff7fb,
+    #fff0f6
+  ) !important;
+
+  color:#d63384 !important;
+
+  font-size:13px;
+  font-weight:600;
+
+  text-decoration:none;
+
+  transition:all .28s ease;
+
+  box-shadow:
+  0 6px 18px rgba(255,105,180,0.08);
+}
+
+/* HOVER */
+.pagination .page-link:hover{
+
+  background:linear-gradient(
+    135deg,
+    #ff7eb3,
+    #ff4f9a
+  ) !important;
+
+  border-color:#ff4f9a !important;
+
+  color:#fff !important;
+
+  transform:translateY(-2px);
+
+  box-shadow:
+  0 10px 24px rgba(255,105,180,0.20);
+}
+
+/* ACTIVE */
+.pagination .page-item.active .page-link{
+
+  background:linear-gradient(
+    135deg,
+    #ff7eb3,
+    #ff4f9a
+  ) !important;
+
+  border-color:#ff4f9a !important;
+
+  color:#fff !important;
+
+  box-shadow:
+  0 12px 28px rgba(255,105,180,0.25);
+}
+
+.pagination .page-link:focus{
+  box-shadow:none !important;
+}
+
+/* MOBILE */
+@media (max-width:576px){
+
+  .pagination{
+    gap:6px;
+  }
+
+  .pagination .page-link{
+
+    min-width:36px;
+    height:36px;
+
+    font-size:11px;
+
+    border-radius:12px !important;
+  }
+}
+
+</style>
+
 <div class="container mt-5">
 
   <h4 class="mb-4 text-center">{{ category.name|upper }}</h4>
 
-  <div class="row">
+  <!-- TAG FILTERS -->
+<!-- PREMIUM FILTER -->
+<div class="kfilter-wrap">
+
+  <div class="kfilter-scroll">
+
+    <a href="?"
+       class="kfilter-pill {% if not selected_tag %}active{% endif %}">
+      All
+    </a>
+
+    {% for tag in tags %}
+      <a href="?tag={{ tag }}"
+         class="kfilter-pill {% if selected_tag == tag %}active{% endif %}">
+        {{ tag }}
+      </a>
+    {% endfor %}
+
+  </div>
+
+</div>
+
+<div class="row g-3">
 
   {% for p in products %}
     <div class="col-6 col-md-3 mb-4">
@@ -83,5 +343,56 @@
   </div>
 
 </div>
+
+<!-- PAGINATION -->
+{% if products.has_other_pages %}
+<div class="d-flex justify-content-center mt-4">
+
+  <nav>
+    <ul class="pagination" style="color: #F3A6A0 !important;">
+
+      <!-- Previous -->
+      {% if products.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ products.previous_page_number }}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">
+          Previous
+        </a>
+      </li>
+      {% endif %}
+
+      <!-- Page Numbers -->
+      {% for num in products.paginator.page_range %}
+
+        {% if products.number == num %}
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link"
+              href="?page={{ num }}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">
+              {{ num }}
+            </a>
+          </li>
+        {% endif %}
+
+      {% endfor %}
+
+      <!-- Next -->
+      {% if products.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+          href="?page={{ products.next_page_number }}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">
+          Next
+        </a>
+      </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+
+</div>
+{% endif %}
 
 {% endblock %}

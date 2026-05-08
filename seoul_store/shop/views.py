@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 import uuid
+from django.core.paginator import Paginator
 
 
 def get_cart(user):
@@ -61,12 +62,10 @@ def home(request):
 
     products = Product.objects.select_related('category').all()
 
-    # 🔍 SEARCH
     query = request.GET.get('q')
     if query:
         products = products.filter(name__icontains=query)
 
-    # 💰 PRICE FILTER
     min_price = request.GET.get('min')
     max_price = request.GET.get('max')
 
@@ -76,12 +75,19 @@ def home(request):
     if max_price:
         products = products.filter(retail_price__lte=max_price)
 
-    # 👇 apply pricing
     for p in products:
         p.display_price = p.get_price_for_user(request.user)
 
     routine_items = Routine.objects.filter(active=True).order_by('order')
     promos = HomePromo.objects.filter(active=True).order_by('order')[:2]
+
+    # ✅ ACCESSORIES PRODUCTS
+    accessories_products = Product.objects.filter(
+        category__slug='accessories'
+    )[:8]
+
+    for p in accessories_products:
+        p.display_price = p.get_price_for_user(request.user)
 
     return render(request, 'home.html', {
         'banners': banners,
@@ -89,7 +95,8 @@ def home(request):
         'bannerssection3': bannerssection3,
         'products': products,
         'routine_items': routine_items,
-        'promos':promos
+        'promos': promos,
+        'accessories_products': accessories_products,
     })
 
 def price_filter(request):
@@ -153,20 +160,50 @@ def ajax_products(request):
 
 def category_view(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    products = Product.objects.filter(category=category)
 
-    # ✅ ADD THIS
+    products_list = Product.objects.filter(category=category)
+
+    # ✅ GET TAG FROM URL
+    selected_tag = request.GET.get('tag')
+
+    if selected_tag:
+        products_list = products_list.filter(tag__iexact=selected_tag)
+
+    # ✅ GET UNIQUE TAGS FOR FILTER UI
+    tags = Product.objects.filter(
+        category=category
+    ).exclude(
+        tag=""
+    ).values_list(
+        'tag', flat=True
+    ).distinct()
+
+    # ✅ pagination
+    paginator = Paginator(products_list, 12)
+
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    # ✅ pricing
     for p in products:
         p.display_price = p.get_price_for_user(request.user)
 
     return render(request, 'category.html', {
         'category': category,
         'products': products,
+        'tags': tags,
+        'selected_tag': selected_tag,
     })
 
 def all_categories_products(request):
 
-    products = Product.objects.select_related('category').all()
+    products_list = Product.objects.select_related('category').all()
+
+    # ✅ pagination
+    paginator = Paginator(products_list, 12)
+
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
 
     for p in products:
         p.display_price = p.get_price_for_user(request.user)

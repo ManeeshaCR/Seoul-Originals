@@ -201,50 +201,94 @@
     </a>
   </div>
 
-  <div class="row">
-    {% for product in accessories_products %}
+  <div class="product-grid">
 
-    <div class="col-6 col-md-3 mb-4">
-      <div class="card h-100 border-0 shadow-sm">
+    {% for p in accessories_products %}
 
-        <a href="{% url 'product_detail' product.slug %}">
-          <img src="{{ product.image.url }}"
-               class="card-img-top"
-               style="height:260px; object-fit:cover;">
-        </a>
+    <div class="product-col">
 
-        <div class="card-body">
+      <div class="product-card">
 
-          <h6 class="card-title">
-            {{ product.name|truncatechars:40 }}
-          </h6>
+        <a href="{% url 'product_detail' p.slug %}" class="text-decoration-none">
 
-          <div class="fw-bold mb-2">
-            AED {{ product.display_price }}
+          <!-- IMAGE -->
+          <div class="product-img">
+            <img src="{{ p.image.url }}">
           </div>
 
-          <form method="POST"
-                action="{% url 'add_to_cart' product.id %}">
-            {% csrf_token %}
+          <!-- INFO -->
+          <div class="product-info">
 
-            <button class="btn btn-dark w-100">
-              Add to Cart
-            </button>
-          </form>
+            <div class="product-title">
+              {{ p.name }}
+            </div>
 
-        </div>
+            {% if user.is_authenticated %}
+
+              {% if p.display_price is not None %}
+                <div class="price {% if user.userprofile.account_type == 'wholesale' %}text-success{% endif %}">
+                  AED {{ p.display_price }}
+                </div>
+              {% else %}
+                <div class="pending">
+                  Your wholesale account is under review.
+                </div>
+              {% endif %}
+
+            {% else %}
+
+              <a href="{% url 'login' %}" class="login-price">
+                Login to view price
+              </a>
+
+            {% endif %}
+
+          </div>
+
+        </a>
+
+        <!-- ADD TO CART -->
+        {% if user.is_authenticated %}
+        {% with profile=user.userprofile %}
+
+          {% if profile.account_type == 'wholesale' and not profile.approved %}
+
+          {% else %}
+
+            {% if p.stock > 0 %}
+              <form method="POST" action="{% url 'add_to_cart' p.id %}">
+                {% csrf_token %}
+
+                <button class="btn-cart">
+                  ADD TO CART
+                </button>
+              </form>
+
+            {% else %}
+
+              <button class="btn-cart disabled" disabled>
+                OUT OF STOCK
+              </button>
+
+            {% endif %}
+
+          {% endif %}
+
+        {% endwith %}
+        {% endif %}
+
       </div>
+
     </div>
 
     {% empty %}
 
-    <div class="col-12">
-      <p>No accessories found.</p>
-    </div>
+    <p>No accessories found.</p>
 
     {% endfor %}
+
   </div>
 
 </div>
-{% endblock %}
 
+{% endblock %}
