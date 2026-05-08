@@ -208,119 +208,162 @@ body{
     animation-duration: 10s;
   }
 }
-/* ================= PRODUCTS ================= */
-/* ===== PRODUCT GRID ===== */
-/* ================= PRODUCT GRID (FINAL) ================= */
+/* =======================================================
+   PRODUCT GRID + CARD (FINAL FIXED RESPONSIVE)
+   ✅ Button always bottom
+   ✅ 1024px same as desktop
+   ✅ No stacking at 1024
+   ✅ Always 5 cards in straight line on desktop/tablet
+   ✅ No horizontal scroll on desktop/tablet
+======================================================= */
+
+/* ================= GRID ================= */
 
 .product-grid {
   display: flex;
-  gap: 13px;
+  flex-wrap: nowrap;
+
+  gap: 16px;
+
   overflow-x: auto;
-  padding-bottom: 10px;
+  overflow-y: hidden;
+
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+
+  padding-bottom: 10px;
+
+  align-items: stretch;
 }
 
-/* smooth snap (premium feel) */
-.product-grid {
-  scroll-snap-type: x mandatory;
+.product-grid::-webkit-scrollbar {
+  display: none;
 }
+
+/* ================= COLUMN ================= */
 
 .product-col {
   flex: 0 0 48%;
+
+  display: flex;
+
   scroll-snap-align: start;
-}
-
-/* tablet */
-@media (min-width: 768px) {
-  .product-col {
-    flex: 0 0 30%;
-  }
-}
-
-/* desktop = ALWAYS 5 per row */
-@media (min-width: 1200px) {
-  .product-col {
-    flex: 0 0 20%;
-  }
 }
 
 /* ================= CARD ================= */
 
 .product-card {
-  border: 1px solid #000000;
+  width: 100%;
   background: #fff;
-  height: 100%;
+  border: 1px solid #000;
+
   display: flex;
   flex-direction: column;
-  transition: 0.25s ease;
+
+  height: 100%;
 }
 
 /* ================= IMAGE ================= */
 
 .product-img {
-  height: 200px;
-  padding: 12px;
+  height: 170px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  padding: 10px;
+
+  flex-shrink: 0;
 }
 
 .product-img img {
-  max-width: 80%;
+  max-width: 75%;
   max-height: 100%;
   object-fit: contain;
 }
 
 /* ================= INFO ================= */
-
 .product-info {
-  padding: 12px;
-  text-align: center;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  flex: 1;
+  padding: 12px;
 }
 
-/* title */
+/* ================= TITLE ================= */
+
 .product-title {
-  font-size: 15px;
-  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
   line-height: 1.4;
-  margin-bottom: 6px;
   color: #000;
-  font-weight:800;
+  text-align: center;
+  text-decoration: none;
+
+  min-height: 58px;   /* IMPORTANT */
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  margin-bottom: 8px;
 }
+
 
 .product-title:hover {
   color: #f3a6a0;
 }
 
-/* price */
+/* ================= PRICE ================= */
+
 .price {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 8px;
+
+  text-align: center;
+
+  margin-bottom: 10px;
+
+  min-height: 20px;   /* IMPORTANT */
+}
+/* ================= STATUS ================= */
+
+.pending {
+  min-height: 18px;   /* IMPORTANT */
+
+  text-align: center;
+  margin-bottom: 10px;
 }
 
-/* ================= FULL WIDTH BUTTON ================= */
+/* ================= BUTTON ================= */
 
 .btn-cart,
 .login-price {
+  margin-top: auto;   /* PUSHES BUTTON TO BOTTOM */
+
   width: 100%;
-  margin-top: auto;   /* pushes to bottom */
-  padding: 12px;
-  font-size: 13px;
-  text-align: center;
+
+  padding: 11px;
+
   background: #000;
   color: #fff;
+
   border: none;
+
+  text-align: center;
   text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;   /* IMPORTANT */
 }
 
-/* remove old styles conflict */
-.btn-cart {
-  border-radius: 0;
-}
 
 .btn-cart:hover {
   background: #333;
@@ -328,6 +371,243 @@ body{
 
 .btn-cart.disabled {
   background: #ccc;
+  cursor: not-allowed;
+}
+
+/* =======================================================
+   MOBILE
+======================================================= */
+
+@media (max-width: 767px) {
+
+  .product-grid {
+    gap: 10px;
+  }
+
+  .product-col {
+    flex: 0 0 48%;
+  }
+
+  .product-img {
+    height: 170px;
+  }
+
+  .product-title {
+    font-size: 13px;
+    min-height: 52px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+
+  .btn-cart,
+  .login-price {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+/* =======================================================
+   SMALL MOBILE
+======================================================= */
+
+@media (max-width: 480px) {
+
+  .product-grid {
+    gap: 8px;
+  }
+
+  .product-col {
+    flex: 0 0 48%;
+  }
+
+  .product-img {
+    height: 150px;
+    padding: 6px;
+  }
+
+  .product-title {
+    font-size: 12px;
+    min-height: 48px;
+  }
+
+  .price {
+    font-size: 12px;
+  }
+
+  .btn-cart,
+  .login-price {
+    padding: 9px;
+    font-size: 11px;
+  }
+}
+
+/* =======================================================
+   TABLET + DESKTOP
+   ✅ 1024 behaves like desktop
+   ✅ EXACT 5 CARDS
+   ✅ NO STACKING
+   ✅ NO WRAP
+======================================================= */
+
+@media (min-width: 768px) {
+
+  .product-grid {
+    display: flex;
+    flex-wrap: nowrap;
+
+    overflow-x: hidden;
+
+    justify-content: space-between;
+
+    gap: 16px;
+  }
+
+  .product-col {
+    flex: 0 0 calc(20% - 13px);
+    max-width: calc(20% - 13px);
+  }
+
+  .product-card {
+    height: 100%;
+  }
+
+  .product-img {
+    height: 220px;
+  }
+
+  .product-title {
+    font-size: 14px;
+    min-height: 58px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+
+  .btn-cart,
+  .login-price {
+    font-size: 12px;
+    padding: 11px;
+  }
+}
+/* =======================================================
+   DESKTOP/TABLET PRODUCT GRID FIX
+   ✅ No huge gap when products < 5
+======================================================= */
+
+@media (min-width: 768px) {
+
+  .product-grid {
+    display: flex;
+    flex-wrap: nowrap;
+
+    gap: 16px;
+
+    overflow-x: hidden;
+
+    justify-content: flex-start; /* IMPORTANT */
+  }
+
+  .product-col {
+    flex: 0 0 calc(20% - 13px);
+    max-width: calc(20% - 13px);
+  }
+
+}
+
+/* optional: center when only 1 or 2 products */
+
+.product-grid.few-products {
+  justify-content: center;
+}
+/* =======================================================
+   LARGE DESKTOP
+======================================================= */
+
+@media (min-width: 1200px) {
+
+  .product-grid {
+    gap: 18px;
+  }
+
+  .product-col {
+    flex: 0 0 calc(20% - 15px);
+    max-width: calc(20% - 15px);
+  }
+
+  .product-img {
+    height: 240px;
+  }
+
+  .product-title {
+    min-height: 60px;
+  }
+}
+
+/* =======================================================
+   MOBILE
+======================================================= */
+
+@media (max-width: 767px) {
+
+  .product-grid {
+    gap: 10px;
+  }
+
+  .product-col {
+    flex: 0 0 48%;
+  }
+
+  .product-card {
+    min-height: 100%;
+  }
+
+  .product-img {
+    height: 170px;
+  }
+
+  .product-title {
+    font-size: 13px;
+    min-height: 38px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+
+  .btn-cart,
+  .login-price {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+/* =======================================================
+   SMALL MOBILE
+======================================================= */
+@media (max-width: 480px) {
+
+  .product-col {
+    display: flex;
+  }
+
+  .product-card {
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-title {
+    min-height: 64px;
+    font-size: 12px;
+  }
+
+  .btn-cart,
+  .login-price {
+    min-height: 44px;
+    font-size: 11px;
+  }
 }
 
 /* ================= CLEAN GAP UNDER TITLE ================= */
