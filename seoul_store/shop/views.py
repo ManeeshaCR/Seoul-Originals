@@ -245,8 +245,8 @@ def signup_individual(request):
             messages.success(request, "Account created successfully!")
             return redirect('/')
 
-        else:
-            messages.error(request, "Please fix the errors below.")
+        # else:
+        #     messages.error(request, "Please fix the errors below.")
 
     else:
         form = UserCreationForm()

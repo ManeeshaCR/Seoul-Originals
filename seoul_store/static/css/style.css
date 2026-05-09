@@ -130,7 +130,24 @@ body{
   height: auto;        /* ✅ keeps original ratio */
   display: block;      /* ✅ removes tiny bottom gap */
 }
+/* MOBILE HERO HEIGHT */
+@media (max-width: 768px) {
 
+  .hero-img {
+    height: 280px; /* increase as needed */
+    object-fit: contain;
+  }
+
+}
+
+/* SMALL MOBILE */
+@media (max-width: 480px) {
+
+  .hero-img {
+    height: 300px;
+  }
+
+}
 /* ================= BRAND STRIP ================= */
 /* ================= BRAND MARQUEE ================= */
 .brand-strip {

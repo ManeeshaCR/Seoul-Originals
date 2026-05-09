@@ -10,6 +10,20 @@
     <form method="POST">
       {% csrf_token %}
 
+        {% if form.errors %}
+        <div class="error-box">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <p>{{ field.label }}: {{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
       {% for field in form %}
         <input 
           type="{{ field.field.widget.input_type }}" 
@@ -19,6 +33,7 @@
           required
         >
       {% endfor %}
+
 
       <button class="btn-main mt-2">Create Account</button>
     </form>
