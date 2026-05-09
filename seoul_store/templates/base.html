@@ -410,6 +410,167 @@
         font-size:15px;
       }
     }
+
+    /* =========================================
+    LOGIN REQUIRED MODAL
+  ========================================= */
+
+  #loginRequiredModal .modal-content{
+    border:none;
+    border-radius:28px;
+    overflow:hidden;
+
+    background:
+      linear-gradient(
+        180deg,
+        #fff7f7 0%,
+        #ffffff 100%
+      );
+
+    box-shadow:
+      0 20px 60px rgba(243,166,160,0.25);
+  }
+
+  /* HEADER */
+
+  #loginRequiredModal .modal-header{
+    border-bottom:none;
+    padding:22px 24px 10px;
+
+    background:
+      linear-gradient(
+        135deg,
+        #f3a6a0 0%,
+        #f8c5c0 100%
+      );
+  }
+
+  #loginRequiredModal .modal-title{
+    color:white;
+    font-size:20px;
+    letter-spacing:0.5px;
+  }
+
+  /* CLOSE BUTTON */
+
+  #loginRequiredModal .btn-close{
+    filter:brightness(0) invert(1);
+    opacity:0.9;
+  }
+
+  /* BODY */
+
+  #loginRequiredModal .modal-body{
+    padding:35px 28px 30px;
+  }
+
+  #loginRequiredModal .modal-body h6{
+    font-size:26px;
+    font-weight:800;
+    color:#222;
+    margin-bottom:14px;
+  }
+
+  #loginRequiredModal .modal-body p{
+    font-size:15px;
+    color:#777 !important;
+    line-height:1.7;
+  }
+
+  /* BUTTONS */
+
+  #loginRequiredModal .btn-dark{
+    height:52px;
+    border:none;
+    border-radius:14px;
+
+    background:
+      linear-gradient(
+        135deg,
+        #f3a6a0 0%,
+        #ec8f88 100%
+      );
+
+    font-weight:700;
+    font-size:15px;
+
+    transition:0.3s ease;
+  }
+
+  #loginRequiredModal .btn-dark:hover{
+    transform:translateY(-2px);
+
+    background:
+      linear-gradient(
+        135deg,
+        #ec8f88 0%,
+        #e67e76 100%
+      );
+  }
+
+  #loginRequiredModal .btn-outline-dark{
+    height:52px;
+    border-radius:14px;
+
+    border:1.5px solid #f3a6a0;
+    color:#e57f77;
+    background:white;
+
+    font-weight:700;
+    font-size:15px;
+
+    transition:0.3s ease;
+  }
+
+  #loginRequiredModal .btn-outline-dark:hover{
+    background:#fff1f0;
+    border-color:#ec8f88;
+    color:#d96c63;
+  }
+
+  /* MOBILE */
+
+  @media (max-width:768px){
+
+    #loginRequiredModal .modal-dialog{
+      margin:18px;
+    }
+
+    #loginRequiredModal .modal-body{
+      padding:30px 22px 24px;
+    }
+
+    #loginRequiredModal .modal-body h6{
+      font-size:22px;
+    }
+  }
+
+  /* ICON */
+
+  .login-modal-icon{
+    width:78px;
+    height:78px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:
+      linear-gradient(
+        135deg,
+        #fce3e1 0%,
+        #fff3f2 100%
+      );
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .login-modal-icon i{
+    font-size:34px;
+    color:#ec8f88;
+  }
   </style>
 </head>
 
@@ -644,6 +805,48 @@
 
 </footer>
 
+<!-- LOGIN REQUIRED MODAL -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+
+      <div class="modal-header">
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body text-center p-4">
+
+       <div class="login-modal-icon mb-3">
+          <i class="bi bi-bag-heart"></i>
+        </div>
+
+        <h6>
+          Unlock Exclusive Shopping
+        </h6>
+
+        <p class="mb-4">
+          Login to explore pricing, premium Korean beauty collections, and exclusive offers.
+        </p>
+
+        <a id="loginRedirectBtn"
+           href="/login/"
+           class="btn btn-dark w-100 mb-2">
+          Login
+        </a>
+
+        <a href="/signup/"
+           class="btn btn-outline-dark w-100">
+          Create Account
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -750,6 +953,46 @@ function addToCart(productId) {
 
   window.addEventListener('load', initPromoSwiper);
   window.addEventListener('resize', initPromoSwiper);
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const isAuthenticated =
+    "{% if user.is_authenticated %}true{% else %}false{% endif %}" === "true";
+
+  const links = document.querySelectorAll(".shop-price-link");
+
+  links.forEach(link => {
+
+    link.addEventListener("click", function(e) {
+
+      // ✅ logged in → keep current behavior
+      if (isAuthenticated) {
+        return;
+      }
+
+      // ❌ guest → show popup
+      e.preventDefault();
+
+      const targetUrl = this.getAttribute("href");
+
+      // save redirect target
+      const loginBtn = document.getElementById("loginRedirectBtn");
+
+      loginBtn.href = `/login/?next=${encodeURIComponent(targetUrl)}`;
+
+      const modal = new bootstrap.Modal(
+        document.getElementById("loginRequiredModal")
+      );
+
+      modal.show();
+
+    });
+
+  });
+
+});
 </script>
 </body>
 </html>
